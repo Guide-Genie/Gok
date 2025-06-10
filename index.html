@@ -190,18 +190,27 @@ function loadAll(){
     document.getElementById(id+'_mineralSel').value=localStorage.getItem(`${id}_mineralSel`)||'pearlstone';
     document.getElementById(id+'_level').value=localStorage.getItem(`${id}_level`)||30;
     document.getElementById(id+'_level').dispatchEvent(new Event('change'));
-['critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent'].forEach(k=>{
-  const el=document.getElementById(`${id}_${k}`);
-  const saved = localStorage.getItem(`${id}_${k}`);
-  if(saved !== null) el.value = saved;
-  el.oninput=()=>{saveAll();doCalc();}
-});
-
+    
+    ['critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent'].forEach(k=>{
+      const el=document.getElementById(`${id}_${k}`);
+      const saved = localStorage.getItem(`${id}_${k}`);
+      if(saved !== null) el.value = saved;
+      // **여기서 바로 저장도 다시 보장**
+      el.oninput=()=>{saveAll();doCalc();}
+    });
+    
+    // 선택박스 이벤트도 저장되게 보장
     document.getElementById(id+'_mineralSel').onchange=()=>{saveAll();doCalc();}
   });
+
+  // 계산 버튼에도 저장
   document.getElementById('calcBtn').onclick=()=>{saveAll();doCalc();}
+  
+  // 마지막으로 로딩 후 즉시 저장!
+  saveAll();
   doCalc();
 }
+
 
 
 window.onload = loadAll;
