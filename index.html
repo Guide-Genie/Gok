@@ -4,51 +4,55 @@
 <meta charset="UTF-8">
 <title>곡괭이 채굴량 계산</title>
 <style>
-  body { background: #1a1a1a; color: #e0e0e0; font-family: 'Noto Sans KR', sans-serif; padding: 20px; }
-  h1 { color: #ffcc00; font-size: 1.8em; margin-bottom: 20px; }
-  .settings-container { display: flex; gap: 20px; flex-wrap: wrap; }
-  .card { background: #292929; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); flex: 1; min-width: 300px; }
-  .card h2 { margin:0 0 10px; font-size: 1.2em; color: #ffcc00; }
-  .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-  .input-row label { flex: 1; display: flex; flex-direction: column; font-size: 0.95em; }
+  body { background:#1a1a1a; color:#e0e0e0; font-family:'Noto Sans KR'; padding:20px; }
+  h1 { color:#ffcc00; font-size:1.8em; }
+  .settings-container { display:flex; gap:20px; flex-wrap:wrap; }
+  .card { background:#292929; padding:15px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.5); flex:1; min-width:300px;}
+  .card h2 { margin:0 0 10px; color:#ffcc00; }
+  .input-row { display:flex; gap:10px; margin-bottom:10px; }
+  .input-row label { flex:1; display:flex; flex-direction:column; font-size:0.95em; }
   .input-row input, .input-row select {
-    flex: 1 1 auto; min-width: 50px; max-width: 100px;
-    padding: 6px; border: none; border-radius: 4px; font-size: 1em;
-    background: #444; color: #fff;
+    flex:1 1 auto; min-width:50px; max-width:120px; padding:6px; border:none; border-radius:4px;
+    font-size:1em; background:#444; color:#fff;
   }
   input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button {
-    transform: scale(1.5); /* 스핀 버튼 1.5배로 확대 */
-  }
-  input[type=number] {
-    -moz-appearance: textfield; /* Firefox */
-  }
-  .input-row input[readonly] { background: #555; }
-  button#calcBtn { background: #ffcc00; color: #222; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-  .result { background: #333; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.95em; }
-  .highlight { color: #00ffcc; font-weight: bold; }
-  .better { box-shadow: 0 0 20px 5px rgba(255,255,0,0.6); }
+  input[type=number]::-webkit-outer-spin-button { transform:scale(1.5); }
+  input[type=number] { -moz-appearance:textfield; }
+  .input-row input[readonly] { background:#555; }
+  button#calcBtn { background:#ffcc00; color:#222; border:none; padding:10px; border-radius:4px;
+                   font-weight:bold; cursor:pointer; width:100%; margin-top:10px; }
+  .result { background:#333; padding:10px; border-radius:4px; margin-top:10px; font-size:0.95em; }
+  .highlight { color:#00ffcc; font-weight:bold; }
+  .better { box-shadow:0 0 20px 5px rgba(255,255,0,0.6); }
 </style>
 </head>
 <body>
 
 <h1>곡괭이 채굴량 계산</h1>
+<div>
+  <label>광물 선택<select id="mineralSel">
+    <option value="electric">전기석</option>
+    <option value="salad">샬라드리움</option>
+    <option value="ayan">아야안석</option>
+  </select></label>
+</div>
 
 <div class="settings-container">
   <div class="card" id="setting1">
     <h2>세팅 1</h2>
     <div class="input-row">
       <label>강화 단계<select id="s1_level"></select></label>
-      <label>기본공격력(경)<input type="text" id="s1_baseAtk" readonly></label>
-      <label>강화공격력(경)<input type="text" id="s1_enhanceAtk" readonly></label>
+      <label>기본공격력<readonly><input type="text" id="s1_baseAtk" readonly></label>
+      <label>강화공격력<readonly><input type="text" id="s1_enhanceAtk" readonly></label>
     </div>
     <div class="input-row">
       <label>치명타(%)<input type="number" id="s1_critDmg"></label>
-      <label>체력감소(%)<input type="number" id="s1_hpReduce"></label>
-      <label>쉴드감소(%)<input type="number" id="s1_shieldReduce"></label>
+      <label>내 회피(%)<input type="number" id="s1_evasion" step="0.1"></label>
+      <label>재생력(초당)<input type="number" id="s1_regen" step="1"></label>
     </div>
     <div class="input-row">
-      <label>채굴량<input type="number" id="s1_miningBase"></label>
+      <label>적중률<br>(+%)<input type="number" id="s1_hitRate" step="1"></label>
+      <label>채굴량<input type="number" id="s1_miningBase" step="1"></label>
       <label>드론공격력(%)<input type="number" id="s1_dronePercent" step="4" min="0" max="100"></label>
     </div>
     <div class="result" id="s1_result"></div>
@@ -58,16 +62,17 @@
     <h2>세팅 2</h2>
     <div class="input-row">
       <label>강화 단계<select id="s2_level"></select></label>
-      <label>기본공격력(경)<input type="text" id="s2_baseAtk" readonly></label>
-      <label>강화공격력(경)<input type="text" id="s2_enhanceAtk" readonly></label>
+      <label>기본공격력<readonly><input type="text" id="s2_baseAtk" readonly></label>
+      <label>강화공격력<readonly><input type="text" id="s2_enhanceAtk" readonly></label>
     </div>
     <div class="input-row">
       <label>치명타(%)<input type="number" id="s2_critDmg"></label>
-      <label>체력감소(%)<input type="number" id="s2_hpReduce"></label>
-      <label>쉴드감소(%)<input type="number" id="s2_shieldReduce"></label>
+      <label>내 회피(%)<input type="number" id="s2_evasion" step="0.1"></label>
+      <label>재생력(초당)<input type="number" id="s2_regen" step="1"></label>
     </div>
     <div class="input-row">
-      <label>채굴량<input type="number" id="s2_miningBase"></label>
+      <label>적중률<br>(+%)<input type="number" id="s2_hitRate" step="1"></label>
+      <label>채굴량<input type="number" id="s2_miningBase" step="1"></label>
       <label>드론공격력(%)<input type="number" id="s2_dronePercent" step="4" min="0" max="100"></label>
     </div>
     <div class="result" id="s2_result"></div>
@@ -75,105 +80,118 @@
 </div>
 
 <button id="calcBtn">계산하기</button>
-
 <div class="card">
   <h2>채굴량 차이</h2>
   <div class="result" id="diff_result"></div>
 </div>
 
 <script>
-const atkTable = {
-  1:[1.01657,2.59226],2:[1.04707,2.67003],3:[1.07848,2.75013],4:[1.11084,2.83263],
-  5:[1.14416,2.91761],6:[1.17849,3.00514],7:[1.21384,3.09529],8:[1.25026,3.18815],
-  9:[1.28776,3.28323],10:[1.3264,3.38231],11:[1.36619,3.48497],12:[1.40717,3.58829],
-  13:[1.44939,3.69594],14:[1.49287,3.80682],15:[1.53766,3.92102],16:[1.58379,4.03866],
-  17:[1.6313,4.15982],18:[1.68024,4.28461],19:[1.73065,4.41379],20:[1.78257,4.54554],
-  21:[1.83604,4.68191],22:[1.89112,4.82237],23:[1.94786,4.96704],24:[2.00629,5.11605],
-  25:[2.06648,5.26953],26:[2.12848,5.42762],27:[2.19233,5.59044],28:[2.2581,5.75816],
-  29:[2.32584,5.9309],30:[2.39562,6.10883]
+// 광물별 회피율 값
+const mineralData = {
+  electric: { hp:1600, shield:40, evade:10 },
+  salad:    { hp:1600, shield:40, evade:20 },
+  ayan:     { hp:4000, shield:100, evade:30 }
 };
 
+// 강화 곡괭이 공격력 표
+const atkTable = {
+  1:[1.01657,2.59226], /*…*/ 30:[2.39562,6.10883]
+};
+
+// UI 및 저장 관련
 function setupLevels(){
-  ['s1','s2'].forEach(id => {
-    const sel = document.getElementById(id + '_level');
-    sel.innerHTML = '';
-    for(let i=1;i<=30;i++){
-      let opt = document.createElement('option');
-      opt.value = i; opt.textContent = i + '강';
-      sel.appendChild(opt);
-    }
+  ['s1','s2'].forEach(id=>{
+    const sel = document.getElementById(id+'_level');
+    for(let i=1;i<=30;i++) sel.add(new Option(i+'강',i));
     sel.onchange = () => {
       const [b,e] = atkTable[sel.value];
-      document.getElementById(id + '_baseAtk').value = b.toFixed(4);
-      document.getElementById(id + '_enhanceAtk').value = e.toFixed(4);
-      localStorage.setItem(`${id}_level`, sel.value);
-      localStorage.setItem(`${id}_baseAtk`, b);
-      localStorage.setItem(`${id}_enhanceAtk`, e);
-      doCalc();
+      document.getElementById(id+'_baseAtk').value = b.toFixed(4);
+      document.getElementById(id+'_enhanceAtk').value = e.toFixed(4);
+      localStorage.setItem(id+'_level', sel.value);
+      saveValues(id); doCalc();
     };
   });
 }
+function saveValues(id){
+  ['critDmg','evasion','regen','hitRate','miningBase','dronePercent']
+    .forEach(k=> localStorage.setItem(`${id}_${k}`, document.getElementById(`${id}_${k}`).value));
+}
+function loadValues(id){
+  ['critDmg','evasion','regen','hitRate','miningBase','dronePercent']
+  .forEach(k=>{
+    const el = document.getElementById(`${id}_${k}`);
+    el.value = localStorage.getItem(`${id}_${k}`) || el.value;
+    el.oninput = () => { saveValues(id); doCalc(); };
+  });
+}
 
+// 계산 로직
 function calcOne(id){
-  const base = +localStorage.getItem(id+'_baseAtk');
-  const en = +localStorage.getItem(id+'_enhanceAtk');
-  const crit = +document.getElementById(id+'_critDmg').value / 100;
-  const hpR = +document.getElementById(id+'_hpReduce').value / 100;
-  const shR = +document.getElementById(id+'_shieldReduce').value / 100;
+  const minKey = document.getElementById('mineralSel').value;
+  const {hp: mHP, shield: mSh, evade: mEv} = mineralData[minKey];
+  const base = +document.getElementById(id+'_baseAtk').value;
+  const en = +document.getElementById(id+'_enhanceAtk').value;
+  const crit = +document.getElementById(id+'_critDmg').value/100;
+  const dodge = +document.getElementById(id+'_evasion').value/100;
+  const regen = +document.getElementById(id+'_regen').value;
+  const hitB = +document.getElementById(id+'_hitRate').value;
   const mine = +document.getElementById(id+'_miningBase').value;
-  const droneP = +document.getElementById(id+'_dronePercent').value / 100;
+  const droneP = +document.getElementById(id+'_dronePercent').value/100;
 
-  const hp = 1600 * (1 - hpR);
-  const sh = 40 * (1 - shR);
-  const tot = base + en;
+  const netHit = Math.max(0, ((100+hitB)-mEv)/100*(1-dodge));
+  const hitsPerSec = 4 * netHit;
+  const tot = base+en;
+  let shieldBurn = Math.max(0, tot*crit - mSh);
+  if(shieldBurn<=0) shieldBurn=1;
+  const hitsToBreak = Math.ceil((mHP+regen*hitsPerSec)/(shieldBurn));
 
-  let fa = tot * crit - sh;
-  if(fa <= 0) fa = 1;
-  const hits = Math.ceil(hp / fa);
-  const mPick = Math.round(mine * (4 * 3600 / hits));
+  const totalHits = hitsPerSec*3600;
+  const pick = Math.round(mine * totalHits / hitsToBreak);
+  const droneHits = hitsPerSec*droneP*3600;
+  const dronePick = Math.round(mine * droneHits / hitsToBreak);
 
-  let da = tot * droneP;
-  let dfa = da * crit - sh;
-  if(dfa <= 0) dfa = 1;
-  const dhits = Math.ceil(hp / dfa);
-  const mDrone = Math.round(mine * (3 * 3600 / dhits));
-
-  return { pick: mPick, drone: mDrone, total: mPick + mDrone };
+  return { pick, drone: dronePick, total: pick+dronePick };
 }
 
 function doCalc(){
-  const r1 = calcOne('s1');
-  const r2 = calcOne('s2');
-  document.getElementById('s1_result').innerHTML = `곡괭이: <span class="highlight">${r1.pick}</span>개<br>드론: <span class="highlight">${r1.drone}</span>개<br>합계: <span class="highlight">${r1.total}</span>개`;
-  document.getElementById('s2_result').innerHTML = `곡괭이: <span class="highlight">${r2.pick}</span>개<br>드론: <span class="highlight">${r2.drone}</span>개<br>합계: <span class="highlight">${r2.total}</span>개`;
-  document.getElementById('diff_result').innerHTML = `곡괭이 차이: <span class="highlight">${r2.pick - r1.pick}</span>개<br>드론 차이: <span class="highlight">${r2.drone - r1.drone}</span>개<br>합계 차이: <span class="highlight">${r2.total - r1.total}</span>개`;
+  const r1 = calcOne('s1'), r2 = calcOne('s2');
+  document.getElementById('s1_result').innerHTML = 
+    `곡괭이: <span class="highlight">${r1.pick}</span>개<br>` +
+    `드론: <span class="highlight">${r1.drone}</span>개<br>` +
+    `합계: <span class="highlight">${r1.total}</span>개`;
 
-  document.getElementById('setting1').classList.toggle('better', r1.total > r2.total);
-  document.getElementById('setting2').classList.toggle('better', r2.total > r1.total);
+  document.getElementById('s2_result').innerHTML = 
+    `곡괭이: <span class="highlight">${r2.pick}</span>개<br>` +
+    `드론: <span class="highlight">${r2.drone}</span>개<br>` +
+    `합계: <span class="highlight">${r2.total}</span>개`;
+
+  document.getElementById('diff_result').innerHTML =
+    `곡괭이 차이: <span class="highlight">${r2.pick-r1.pick}</span>개<br>` +
+    `드론 차이: <span class="highlight">${r2.drone-r1.drone}</span>개<br>` +
+    `합계 차이: <span class="highlight">${r2.total-r1.total}</span>개`;
+
+  document.getElementById('setting1').classList.toggle('better', r1.total>r2.total);
+  document.getElementById('setting2').classList.toggle('better', r2.total>r1.total);
 }
 
 function saveAll(){
-  ['s1','s2'].forEach(s=>{
-    ['critDmg','hpReduce','shieldReduce','miningBase','dronePercent'].forEach(k=>{
-      localStorage.setItem(`${s}_${k}`, document.getElementById(`${s}_${k}`).value);
-    });
-  });
+  saveValues('s1'); saveValues('s2');
+  localStorage.setItem('mineralSel', document.getElementById('mineralSel').value);
 }
 
 function loadAll(){
   setupLevels();
-  ['s1','s2'].forEach(s => {
-    const lvl = localStorage.getItem(`${s}_level`) || '30';
-    document.getElementById(`${s}_level`).value = lvl;
-    document.getElementById(`${s}_level`).dispatchEvent(new Event('change'));
+  loadValues('s1'); loadValues('s2');
+  const savedMin = localStorage.getItem('mineralSel');
+  if(savedMin) document.getElementById('mineralSel').value = savedMin;
+  document.getElementById('mineralSel').onchange = () => { saveAll(); doCalc(); };
 
-    ['critDmg','hpReduce','shieldReduce','miningBase','dronePercent'].forEach(k => {
-      const el = document.getElementById(`${s}_${k}`);
-      el.value = localStorage.getItem(`${s}_${k}`) || el.value;
-      el.oninput = () => { saveAll(); doCalc(); };
-      el.onkeydown = e => { if(e.key==='Enter'){ saveAll(); doCalc(); } };
-    });
+  ['s1','s2'].forEach(s=>{
+    const lvl = localStorage.getItem(s+'_level')||30;
+    document.getElementById(s+'_level').value = lvl;
+    document.getElementById(s+'_level').dispatchEvent(new Event('change'));
   });
+
   document.getElementById('calcBtn').onclick = () => { saveAll(); doCalc(); };
   doCalc();
 }
