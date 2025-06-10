@@ -174,30 +174,33 @@ function doCalc() {
   document.getElementById('setting2').classList.toggle('better', r2.total > r1.total);
 }
 
-function saveAll() {
-  ['s1','s2'].forEach(id => {
-    ['mineralSel','level','critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent']
-      .forEach(k => localStorage.setItem(`${id}_${k}`, document.getElementById(`${id}_${k}`).value));
+function saveAll(){
+  ['s1','s2'].forEach(id=>{
+    ['mineralSel','critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent'].forEach(k=>{
+      localStorage.setItem(`${id}_${k}`,document.getElementById(`${id}_${k}`).value);
+    });
+    localStorage.setItem(`${id}_level`,document.getElementById(`${id}_level`).value);
   });
 }
 
-function loadAll() {
+
+function loadAll(){
   setupLevels();
-  ['s1','s2'].forEach(id => {
-    document.getElementById(id+'_mineralSel').value = localStorage.getItem(`${id}_mineralSel`) || 'pearlstone';
-    document.getElementById(id+'_level').value = localStorage.getItem(`${id}_level`) || 30;
+  ['s1','s2'].forEach(id=>{
+    document.getElementById(id+'_mineralSel').value=localStorage.getItem(`${id}_mineralSel`)||'pearlstone';
+    document.getElementById(id+'_level').value=localStorage.getItem(`${id}_level`)||30;
     document.getElementById(id+'_level').dispatchEvent(new Event('change'));
-    ['critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent']
-      .forEach(k => {
-        const el = document.getElementById(`${id}_${k}`);
-        el.value = localStorage.getItem(`${id}_${k}`) || el.value;
-        el.oninput = ()=>{ saveAll(); doCalc(); };
-      });
-    document.getElementById(id+'_mineralSel').onchange = ()=>{ saveAll(); doCalc(); };
+    ['critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent'].forEach(k=>{
+      const el=document.getElementById(`${id}_${k}`);
+      el.value=localStorage.getItem(`${id}_${k}`)||el.value;
+      el.oninput=()=>{saveAll();doCalc();}
+    });
+    document.getElementById(id+'_mineralSel').onchange=()=>{saveAll();doCalc();}
   });
-  document.getElementById('calcBtn').onclick = ()=>{ saveAll(); doCalc(); };
+  document.getElementById('calcBtn').onclick=()=>{saveAll();doCalc();}
   doCalc();
 }
+
 
 window.onload = loadAll;
 </script>
