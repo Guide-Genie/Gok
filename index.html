@@ -187,29 +187,33 @@ function saveAll(){
 function loadAll(){
   setupLevels();
   ['s1','s2'].forEach(id=>{
-    document.getElementById(id+'_mineralSel').value=localStorage.getItem(`${id}_mineralSel`)||'pearlstone';
-    document.getElementById(id+'_level').value=localStorage.getItem(`${id}_level`)||30;
+    // 광물과 강화단계 기본값
+    document.getElementById(id+'_mineralSel').value='pearlstone';
+    document.getElementById(id+'_level').value=30;
     document.getElementById(id+'_level').dispatchEvent(new Event('change'));
     
+    // 나머지 입력칸에 초기값을 직접 지정
+    document.getElementById(id+'_critDmg').value = 1020;
+    document.getElementById(id+'_hpReduce').value = 65;
+    document.getElementById(id+'_shieldReduce').value = 55;
+    document.getElementById(id+'_hitRate').value = 50;
+    document.getElementById(id+'_miningBase').value = 41;
+    document.getElementById(id+'_dronePercent').value = 100;
+
+    // 입력값 바꿀 때마다 계산
     ['critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent'].forEach(k=>{
       const el=document.getElementById(`${id}_${k}`);
-      const saved = localStorage.getItem(`${id}_${k}`);
-      if(saved !== null) el.value = saved;
-      // **여기서 바로 저장도 다시 보장**
-      el.oninput=()=>{saveAll();doCalc();}
+      el.oninput=()=>{doCalc();}
     });
-    
-    // 선택박스 이벤트도 저장되게 보장
-    document.getElementById(id+'_mineralSel').onchange=()=>{saveAll();doCalc();}
-  });
 
-  // 계산 버튼에도 저장
-  document.getElementById('calcBtn').onclick=()=>{saveAll();doCalc();}
-  
-  // 마지막으로 로딩 후 즉시 저장!
-  saveAll();
+    document.getElementById(id+'_mineralSel').onchange=()=>{doCalc();}
+    document.getElementById(id+'_level').onchange=()=>{doCalc();}
+  });
+  document.getElementById('calcBtn').onclick=()=>{doCalc();};
+
   doCalc();
 }
+
 
 
 
