@@ -190,11 +190,13 @@ function loadAll(){
     document.getElementById(id+'_mineralSel').value=localStorage.getItem(`${id}_mineralSel`)||'pearlstone';
     document.getElementById(id+'_level').value=localStorage.getItem(`${id}_level`)||30;
     document.getElementById(id+'_level').dispatchEvent(new Event('change'));
-    ['critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent'].forEach(k=>{
-      const el=document.getElementById(`${id}_${k}`);
-      el.value=localStorage.getItem(`${id}_${k}`)||el.value;
-      el.oninput=()=>{saveAll();doCalc();}
-    });
+['critDmg','hpReduce','shieldReduce','hitRate','miningBase','dronePercent'].forEach(k=>{
+  const el=document.getElementById(`${id}_${k}`);
+  const saved = localStorage.getItem(`${id}_${k}`);
+  if(saved !== null) el.value = saved;
+  el.oninput=()=>{saveAll();doCalc();}
+});
+
     document.getElementById(id+'_mineralSel').onchange=()=>{saveAll();doCalc();}
   });
   document.getElementById('calcBtn').onclick=()=>{saveAll();doCalc();}
