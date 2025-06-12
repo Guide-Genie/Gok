@@ -207,7 +207,14 @@ function loadAll(){
     });
 
     document.getElementById(id+'_mineralSel').onchange=()=>{doCalc();}
-    document.getElementById(id+'_level').onchange=()=>{doCalc();}
+    document.getElementById(id+'_level').onchange = () => {
+  const level = document.getElementById(id+'_level').value;
+  const [b, e] = atkTable[level];
+  document.getElementById(id+'_baseAtk').value = b.toFixed(4);
+  document.getElementById(id+'_enhanceAtk').value = e.toFixed(4);
+  doCalc();
+};
+
   });
   document.getElementById('calcBtn').onclick=()=>{doCalc();};
 
